@@ -1,181 +1,109 @@
 # Invernadero con hilos
 
-Práctica tema 4 de PSP 2 DAM — Francisco Javier Saravia Ogazón.
+Práctica tema 4 de PSP 2 DAM — Francisco Javier Saravia Ogazón
 
 ## Qué hace
 
-Simula el invernadero de Pilar y José. Hay tres sensores (temperatura, humedad y luz) y un programador de riego.
-Cada sensor toma 5 lecturas con su periodo y avisa con `⚠ ALERTA` si el valor se sale del rango correcto. El riego hace 5 ciclos
-(abre, cierra, abre…) y cada vez que abre suma 2,5 litros. Al final se imprime un informe con las estadísticas de cada uno.
+El programa simula el invernadero de Pilar y José. Hay tres sensores (temperatura, humedad y luz) y un riego automático. Cada sensor hace 5 lecturas y, si el valor se sale de lo normal, escribe un aviso de ALERTA. El riego abre y cierra la válvula 5 veces y cada vez que la abre echa 2,5 litros. Cuando todo termina, imprime un informe con la media, el mínimo, el máximo y las alertas de cada sensor.
 
-| Dispositivo | Cada | Valores | Rango correcto | Implementado como |
-|---|---|---|---|---|
-| Temperatura | 400 ms | 15 – 35 ºC | 18 – 30 ºC | `Runnable` (hereda de `Sensor`) |
-| Humedad | 600 ms | 40 – 90 % | 50 – 80 % | `Runnable` (hereda de `Sensor`) |
-| Luz | 500 ms | 0 – 1000 lux | 200 – 900 lux | `Runnable` (hereda de `Sensor`) |
-| Riego | 700 ms | abre / cierra | — | `extends Thread` |
+Lo que cuenta la práctica es comparar dos formas de hacerlo: todo seguido, uno detrás de otro, o todo a la vez con hilos.
 
-Clases:
+Las clases son estas:
 
-- `Sensor` → clase abstracta que implementa `Runnable`. Tiene el `run()` con el bucle de lecturas, las estadísticas y `informe()`.
-- `Temperatura`, `Humedad`, `Luz` → heredan de `Sensor` y solo implementan `medir()`.
-- `ProgramadorRiego` → hereda de `Thread`, su nombre de hilo es `riego` (se lo paso con `super("riego")`).
-- `Fase1_Secuencial`, `Fase2_Concurrente`, `Fase3_Experimentos`, `Fase4_Vigilante` → los `main` de cada fase.
+- **Sensor**: clase abstracta con lo que tienen en común todos los sensores (el bucle de lecturas, las estadísticas y el informe). Implementa Runnable.
+- **Temperatura, Humedad y Luz**: heredan de Sensor y solo cambia el rango de valores que generan.
+- **ProgramadorRiego**: el riego. Este hereda de Thread, y le pongo el nombre "riego" al hilo.
+- **Fase1_Secuencial, Fase2_Concurrente, Fase3_Experimentos y Fase4_Vigilante**: un main por cada fase de la práctica.
+
+Los datos de cada uno:
+
+- Temperatura: mide cada 400 ms, valores entre 15 y 35 ºC, lo normal es de 18 a 30.
+- Humedad: cada 600 ms, valores entre 40 y 90 %, lo normal es de 50 a 80.
+- Luz: cada 500 ms, valores entre 0 y 1000 lux, lo normal es de 200 a 900.
+- Riego: cada 700 ms abre o cierra la válvula.
 
 ## Cómo ejecutarlo
 
-1. Abrir la carpeta del proyecto en IntelliJ con JDK 21.
-2. Abrir la clase de la fase que se quiera (`Fase1_Secuencial`, `Fase2_Concurrente`…) y darle al ▶ de su `main`.
+Se abre el proyecto en IntelliJ con el JDK 21, se abre la clase de la fase que se quiera probar y se le da al botón verde de play que sale al lado del main.
 
-Desde terminal también se puede:
+Si se prefiere desde la terminal:
 
-```
-javac -encoding UTF-8 -d out src/*.java
-java -cp out Fase2_Concurrente
-```
+    javac -encoding UTF-8 -d out src/*.java
+    java -cp out Fase2_Concurrente
 
 ## Captura
 
-Una ejecución de la Fase 2:
+Esto es una ejecución de la Fase 2 (la concurrente):
 
-```
-=== FASE 2: invernadero CONCURRENTE ===
-[09:04:25.094] [riego] Riego ciclo 1: válvula ABIERTA (total 2.5 L)
-[09:04:25.092] [sensor-Humedad] Humedad lectura 1: 66.9 %
-[09:04:25.092] [sensor-Temperatura] Temperatura lectura 1: 24.4 ºC
-[09:04:25.091] [sensor-Luz] Luz lectura 1: 299.1 lux
-[09:04:25.561] [sensor-Temperatura] Temperatura lectura 2: 31.2 ºC  ⚠ ALERTA
-[09:04:25.662] [sensor-Luz] Luz lectura 2: 410.5 lux
-[09:04:25.723] [sensor-Humedad] Humedad lectura 2: 73.0 %
-[09:04:25.823] [riego] Riego ciclo 2: válvula cerrada (total 2.5 L)
-[09:04:25.965] [sensor-Temperatura] Temperatura lectura 3: 23.6 ºC
-[09:04:26.163] [sensor-Luz] Luz lectura 3: 462.9 lux
-[09:04:26.324] [sensor-Humedad] Humedad lectura 3: 57.3 %
-[09:04:26.366] [sensor-Temperatura] Temperatura lectura 4: 17.3 ºC  ⚠ ALERTA
-[09:04:26.524] [riego] Riego ciclo 3: válvula ABIERTA (total 5.0 L)
-[09:04:26.663] [sensor-Luz] Luz lectura 4: 943.6 lux  ⚠ ALERTA
-[09:04:26.767] [sensor-Temperatura] Temperatura lectura 5: 24.7 ºC
-[09:04:26.925] [sensor-Humedad] Humedad lectura 4: 78.4 %
-[09:04:27.164] [sensor-Luz] Luz lectura 5: 988.7 lux  ⚠ ALERTA
-[09:04:27.225] [riego] Riego ciclo 4: válvula cerrada (total 5.0 L)
-[09:04:27.525] [sensor-Humedad] Humedad lectura 5: 84.9 %  ⚠ ALERTA
-[09:04:27.928] [riego] Riego ciclo 5: válvula ABIERTA (total 7.5 L)
+    === FASE 2: invernadero CONCURRENTE ===
+    [09:04:25.094] [riego] Riego ciclo 1: válvula ABIERTA (total 2.5 L)
+    [09:04:25.092] [sensor-Humedad] Humedad lectura 1: 66.9 %
+    [09:04:25.092] [sensor-Temperatura] Temperatura lectura 1: 24.4 ºC
+    [09:04:25.091] [sensor-Luz] Luz lectura 1: 299.1 lux
+    [09:04:25.561] [sensor-Temperatura] Temperatura lectura 2: 31.2 ºC  ⚠ ALERTA
+    [09:04:25.662] [sensor-Luz] Luz lectura 2: 410.5 lux
+    [09:04:25.723] [sensor-Humedad] Humedad lectura 2: 73.0 %
+    [09:04:25.823] [riego] Riego ciclo 2: válvula cerrada (total 2.5 L)
+    ...
+    [09:04:27.928] [riego] Riego ciclo 5: válvula ABIERTA (total 7.5 L)
 
-=== INFORME ===
-Temperatura  -> lecturas: 5 | media: 24.2 ºC | min: 17.3 | max: 31.2 | alertas: 2
-Humedad      -> lecturas: 5 | media: 72.1 % | min: 57.3 | max: 84.9 | alertas: 1
-Luz          -> lecturas: 5 | media: 621.0 lux | min: 299.1 | max: 988.7 | alertas: 2
-Riego        -> ciclos: 5 | litros regados: 7.5 L
-Tiempo total: 3566 ms
-```
+    === INFORME ===
+    Temperatura  -> lecturas: 5 | media: 24.2 ºC | min: 17.3 | max: 31.2 | alertas: 2
+    Humedad      -> lecturas: 5 | media: 72.1 % | min: 57.3 | max: 84.9 | alertas: 1
+    Luz          -> lecturas: 5 | media: 621.0 lux | min: 299.1 | max: 988.7 | alertas: 2
+    Riego        -> ciclos: 5 | litros regados: 7.5 L
+    Tiempo total: 3566 ms
 
 ## Resultados
 
-| Versión | Ejecución 1 | Ejecución 2 | Ejecución 3 | Teórico |
-|---|---|---|---|---|
-| Fase 1 (secuencial) | 11 073 ms | — | — | 2 + 3 + 2,5 + 3,5 = **11 s** (suma) |
-| Fase 2 (concurrente) | 3 566 ms | 3 556 ms | 3 566 ms | el más lento = riego, 5 × 700 = **3,5 s** (máximo) |
+Tiempos que me han salido:
 
-La hipótesis se cumple: en secuencial el tiempo es la **suma** de todos (11 s) y en concurrente es más o menos lo que tarda **el más lento**,
-que es el riego (3,5 s). Va unos 3 veces más rápido. Los milisegundos de más son lo que tarda en crear los hilos y en imprimir.
+- Fase 1 (todo seguido): 11073 ms, o sea, unos 11 segundos.
+- Fase 2 (con hilos): 3566 ms, 3556 ms y 3566 ms en tres ejecuciones, unos 3,5 segundos.
 
-En la Fase 1 todas las líneas del log ponen `[main]`, porque al llamar a `run()` directamente no se crea ningún hilo:
-es una llamada normal a un método y la ejecuta el propio `main`.
+La idea de la práctica era comprobar que en secuencial el tiempo es la suma de todo y con hilos es lo que tarda el más lento. Y sale justo así. Seguido tarda 2 + 3 + 2,5 + 3,5 = 11 segundos. Con hilos todo va a la vez y solo hay que esperar al riego, que es el más lento (5 ciclos de 700 ms = 3,5 s). Va más o menos tres veces más rápido.
 
-**¿Sale siempre en el mismo orden el log de la Fase 2?** No. En las tres ejecuciones el orden de la primera tanda cambia
-(unas veces sale antes la humedad, otras la luz o el riego), y cuando dos hilos coinciden en el mismo milisegundo
-el orden también varía. Lo decide el planificador del sistema operativo, no el orden en que hago los `start()`.
-Incluso la hora impresa puede salir "desordenada" (una línea con 25.094 antes que otra con 25.091) porque un hilo coge la hora y otro imprime antes que él.
+Otra cosa que se ve en la Fase 1: todas las líneas del log dicen [main]. Es porque ahí llamo a run() directamente, y eso no crea ningún hilo nuevo, es como llamar a cualquier método normal, así que lo hace todo el hilo principal.
+
+Y sobre el orden del log en la Fase 2: no sale siempre igual. En las tres veces que lo ejecuté, el orden de las primeras líneas cambiaba (a veces salía antes la humedad, otras la luz o el riego). Eso lo decide el sistema operativo, no yo, aunque yo arranque los hilos siempre en el mismo orden.
 
 ## Análisis
 
-### ¿Por qué compensa usar hilos en el invernadero?
+### Por qué compensa usar hilos aquí
 
-Porque los sensores se pasan casi todo el tiempo esperando (`sleep`) y no calculando. En la versión secuencial, mientras se espera a la humedad
-nadie vigila la temperatura, y si la temperatura sube a 35 ºC no nos enteramos hasta que acabe todo lo demás. Con hilos cada dispositivo
-lleva su ritmo, se vigila todo a la vez y además el programa tarda lo que el más lento en lugar de la suma.
+Porque los sensores se pasan casi todo el rato esperando entre una lectura y la siguiente. Si lo hago seguido, mientras espero a la humedad nadie mira la temperatura, y si se pasa de 30 grados no me entero hasta mucho después. Con hilos cada cosa va a su ritmo, se vigila todo a la vez y además el programa termina antes.
 
-### Experimentos A, B y C
+### Los tres experimentos
 
-**A — Informe sin esperar.** Lanzo la humedad en un hilo y justo después imprimo `informe()`:
+**Experimento A: sacar el informe sin esperar.** Lanzo la humedad en un hilo y enseguida imprimo el informe. Sale con 0 lecturas ("todavía no ha medido nada"). Pasa porque start() solo pone el hilo en marcha y el main sigue su camino sin esperar, así que llega al informe antes de que el sensor haya medido nada. Es parecido a lo que pasaba en el ejemplo de los cohetes, donde main decía que había terminado antes de que acabara la cuenta atrás. Cuando uso join(), el main espera a que el hilo acabe y entonces el informe sale completo (5 lecturas, media 63,3 %).
 
-```
-Informe SIN esperar: Humedad      -> lecturas: 0 (todavía no ha medido nada)
-...
-Informe DESPUES de join: Humedad  -> lecturas: 5 | media: 63.3 % | min: 50.4 | max: 80.7 | alertas: 1
-```
+**Experimento B: llamar a run() en vez de start().** Hago un riego de 3 ciclos con riego.run(). El log dice [main] en vez de [riego], tarda unos 2,1 segundos bloqueando el programa, y el estado del objeto al final es NEW. Es decir, el código del riego se ejecuta, pero no se ha creado ningún hilo de verdad. Esa es la gracia: run() es un método normal y el que crea el hilo es start().
 
-La primera vez sale vacío porque `start()` solo arranca el hilo y vuelve enseguida: `main` sigue a lo suyo y llega al `informe()`
-antes de que el sensor haya hecho ninguna lectura. Es lo mismo que pasaba en el ejemplo 0A con el "main: he terminado" que salía antes de la cuenta atrás.
-Con `join()` main se queda esperando a que el hilo termine y entonces el informe ya está completo.
+**Experimento C: llamar a start() dos veces.** Arranco un riego, espero a que termine (queda en TERMINATED) y vuelvo a llamar a start() con el mismo objeto. Salta la excepción IllegalThreadStateException. Quiere decir que un hilo solo se puede arrancar una vez, y cuando acaba ya no se puede reutilizar. Si quiero regar otra vez tengo que crear un objeto riego nuevo.
 
-**B — `riego.run()` en vez de `riego.start()`.** Con 3 ciclos:
+### Estados que he visto
 
-```
-[09:04:39.014] [main] Riego ciclo 1: válvula ABIERTA (total 2.5 L)
-[09:04:39.715] [main] Riego ciclo 2: válvula cerrada (total 2.5 L)
-[09:04:40.416] [main] Riego ciclo 3: válvula ABIERTA (total 5.0 L)
-Ha tardado: 2102 ms
-Estado del objeto riego: NEW
-```
+- **NEW**: antes de arrancar los hilos, cuando solo he hecho el new. También sale en el experimento B.
+- **RUNNABLE**: justo al arrancar, cuando el hilo está haciendo la lectura o escribiendo. Se ve poco porque dura muy poquito.
+- **TIMED_WAITING**: es el que más sale, casi todo el rato. Es cuando el hilo está dormido en el Thread.sleep() esperando a la siguiente lectura.
+- **BLOCKED**: este no me lo esperaba. Pensaba que no iba a salir porque se usa con synchronized, que se ve en una unidad posterior. Pero en una ejecución, en la primera foto del vigilante, tres de los hilos salieron BLOCKED. Creo que es porque System.out.println por dentro está sincronizado, y como los cuatro hilos querían escribir en la consola a la vez, uno escribía y los otros esperaban su turno.
+- **TERMINATED**: cuando cada hilo acaba su run(). Al final salen todos así.
+- **WAITING**: no me ha salido en ninguno de los cuatro hilos que vigilo. Lo tendría el main mientras espera con join(), pero a ese no lo vigilo.
 
-En el log sale `main` y no `riego`, y tarda 2,1 s (3 × 700) bloqueando a main. Es la "prueba" de los cohetes: llamar a `run()` no crea un hilo,
-es un método normal. Por eso el objeto sigue en estado `NEW`: aunque su código se ha ejecutado entero, el hilo como tal nunca se ha arrancado.
+### Por qué termina el programa aunque el vigilante no para
 
-**C — `start()` dos veces.**
-
-```
-Primer riego terminado, estado: TERMINATED
-Excepcion capturada: java.lang.IllegalThreadStateException
-```
-
-Salta `IllegalThreadStateException`. Un hilo solo se puede arrancar una vez; cuando termina se queda en `TERMINATED` para siempre
-y no se puede "reiniciar". Si quiero volver a regar tengo que crear un objeto `ProgramadorRiego` nuevo.
-
-### Estados observados
-
-| Estado | Cuándo | Qué línea lo provoca |
-|---|---|---|
-| `NEW` | Antes de arrancar los hilos (y en el experimento B) | `new Thread(...)` / `new ProgramadorRiego()`, todavía sin `start()` |
-| `RUNNABLE` | Justo al arrancar, mientras el hilo está haciendo la lectura o imprimiendo | `start()` |
-| `TIMED_WAITING` | Casi todo el rato: es lo que más se ve en el vigilante | `Thread.sleep(periodo)` dentro de `run()` |
-| `BLOCKED` | Me salió en la primera foto del vigilante, justo al arrancar, en 3 de los 4 hilos | `System.out.println` (ver abajo) |
-| `TERMINATED` | Cuando cada hilo acaba su bucle; al final todos | fin de `run()` |
-| `WAITING` | No apareció en los 4 hilos vigilados | lo tendría `main` mientras hace `join()`, pero no lo vigilo |
-
-Lo que esperaba ver era NEW, RUNNABLE, TIMED_WAITING y TERMINATED. Pensaba que `BLOCKED` no iba a salir porque es de `synchronized`
-y eso no lo hemos usado (es de la UD6). Pero en una ejecución salió:
-
-```
-[vigilante] sensor-Temperatura=RUNNABLE  sensor-Humedad=BLOCKED  sensor-Luz=BLOCKED  riego=BLOCKED
-```
-
-Buscando el porqué: `System.out.println` por dentro es `synchronized`, así que cuando los cuatro hilos quieren imprimir
-la primera línea a la vez, uno escribe y los otros tres esperan el cerrojo de la consola. Es muy rápido, por eso solo se ve a veces.
-`RUNNABLE` también se ve poco por lo mismo: el hilo trabaja unos milisegundos y se pasa el resto dormido.
-
-### ¿Por qué termina el programa si el vigilante sigue en su bucle?
-
-Porque el vigilante es un hilo **daemon** (`vigilante.setDaemon(true)`, llamado **antes** de `start()`, si no salta excepción).
-La JVM termina cuando acaban todos los hilos que no son daemon. Cuando terminan los sensores, el riego y `main`, la JVM cierra
-y se lleva por delante al vigilante aunque esté en su `while (true)`. Al final se ve que el vigilante sigue `TIMED_WAITING` y `daemon = true`
-justo antes de que el programa acabe. Sin el `setDaemon(true)` el programa no terminaría nunca.
+El vigilante tiene un while(true) y nunca acaba por sí solo, pero el programa termina igualmente porque lo he puesto como hilo daemon con setDaemon(true) (hay que hacerlo antes del start(), si no da error). Java cierra el programa cuando se acaban todos los hilos normales, y a los daemon no los espera. Así que cuando acaban los sensores, el riego y el main, el programa se cierra y se lleva al vigilante por delante. Si no fuera daemon, el programa se quedaría colgado para siempre.
 
 ### Thread frente a Runnable
 
-| Aspecto | `extends Thread` (riego) | `implements Runnable` (sensores) |
-|---|---|---|
-| Qué representa el objeto | Es el hilo en sí | Es una tarea, el trabajo a hacer |
-| Cómo se arranca | `riego.start()` directamente | Hay que meterlo en un hilo: `new Thread(sensor, "nombre").start()` |
-| Nombre del hilo | `super("riego")` en el constructor y `getName()` | Se da en el `new Thread(..., "sensor-Luz")` y se lee con `Thread.currentThread().getName()` |
-| Herencia | Gasta la única herencia que tiene Java | Deja libre la herencia para otra clase |
-| Reutilizar | Un objeto = una sola ejecución (ver experimento C) | El mismo objeto tarea se puede pasar a otro `Thread` nuevo |
+Con Thread (el riego), la clase es directamente el hilo. Se arranca con riego.start() y el nombre se le pone en el constructor con super("riego"). Con Runnable (los sensores), la clase es solo la tarea, el trabajo que hay que hacer, y hay que meterla dentro de un Thread para ejecutarla: new Thread(sensor, "sensor-Luz").start(). Como no es un Thread, para saber el nombre del hilo que la ejecuta hay que preguntar con Thread.currentThread().getName().
 
-**¿Por qué los sensores SOLO pueden ser Runnable en mi diseño?** Porque ya heredan de `Sensor` (para reutilizar el `run()`, las estadísticas
-y el `informe()`), y Java no tiene herencia múltiple. Si `Temperatura` extends `Sensor`, ya no puede extender también de `Thread`.
-La única forma de que sean ejecutables en un hilo es que `Sensor` implemente `Runnable`.
+Otras diferencias que he notado:
 
-**¿Qué forma elegiría para el riego?** También `Runnable`. Con `extends Thread` funciona porque el riego no hereda de nada más,
-pero me parece más limpio separar la tarea del hilo: así todos los dispositivos se lanzan igual, el riego podría heredar de una
-clase `Dispositivo` en el futuro, y si quiero volver a regar no tengo que crear un objeto nuevo entero. Para algo tan simple
-`extends Thread` es más rápido de escribir, pero `Runnable` es más flexible.
+- Con extends Thread gastas la única herencia que tiene Java. Con Runnable la clase todavía puede heredar de otra.
+- Un objeto Thread solo se puede arrancar una vez (lo del experimento C). La tarea Runnable se puede pasar a un hilo nuevo cuando quieras.
+- Thread es más corto de escribir. Runnable es más flexible.
+
+**Por qué los sensores solo pueden ser Runnable en mi diseño:** porque todos heredan de la clase Sensor, para no repetir el bucle de lecturas, las estadísticas y el informe en cada uno. Java no deja heredar de dos clases a la vez, así que no pueden heredar también de Thread. La única forma de que se puedan ejecutar en un hilo es que Sensor implemente Runnable.
+
+**Qué haría yo con el riego:** lo haría también con Runnable. Funciona bien con Thread porque no hereda de nada más, pero así todo el invernadero se lanza igual, y si en el futuro el riego tiene que heredar de otra clase (por ejemplo una clase Dispositivo) no habría que cambiarlo. Para algo tan sencillo Thread vale, pero Runnable me parece más ordenado.
