@@ -2,9 +2,9 @@
 
 Práctica tema 4 de PSP 2 DAM — Francisco Javier Saravia Ogazón
 
-## Qué hace
+## De que trata el programa
 
-El programa simula el invernadero de Pilar y José. Hay tres sensores (temperatura, humedad y luz) y un riego automático. Cada sensor hace 5 lecturas y, si el valor se sale de lo normal, escribe un aviso de ALERTA. El riego abre y cierra la válvula 5 veces y cada vez que la abre echa 2,5 litros. Cuando todo termina, imprime un informe con la media, el mínimo, el máximo y las alertas de cada sensor.
+El programa simula el invernadero de Pilar y José. Hay tres sensores y un riego automático. Cada sensor hace 5 lecturas y, si el valor se sale de lo normal, escribe un aviso de ALERTA. El riego abre y cierra la válvula 5 veces y cada vez que la abre echa 2,5 litros. Cuando todo termina, imprime un informe con la media, el mínimo, el máximo y las alertas de cada sensor.
 
 Lo que cuenta la práctica es comparar dos formas de hacerlo: todo seguido, uno detrás de otro, o todo a la vez con hilos.
 
