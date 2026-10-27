@@ -1,6 +1,6 @@
 # Invernadero con hilos
 
-Práctica tema 4 de PSP 2 DAM — Francisco Javier Saravia Ogazón
+UD4_Practica1_Invernadero
 
 ## De que trata el programa
 
@@ -22,7 +22,7 @@ Los datos de cada uno:
 - Luz: cada 500 ms, valores entre 0 y 1000 lux, lo normal es de 200 a 900.
 - Riego: cada 700 ms abre o cierra la válvula.
 
-## Cómo ejecutarlo
+## Como se ejecuta
 
 Se abre el proyecto en IntelliJ con el JDK 21, se abre la clase de la fase que se quiera probar y se le da al botón verde de play que sale al lado del main.
 
@@ -104,6 +104,6 @@ Otras diferencias que he notado:
 - Un objeto Thread solo se puede arrancar una vez (lo del experimento C). La tarea Runnable se puede pasar a un hilo nuevo cuando quieras.
 - Thread es más corto de escribir. Runnable es más flexible.
 
-**Por qué los sensores solo pueden ser Runnable en mi diseño:** porque todos heredan de la clase Sensor, para no repetir el bucle de lecturas, las estadísticas y el informe en cada uno. Java no deja heredar de dos clases a la vez, así que no pueden heredar también de Thread. La única forma de que se puedan ejecutar en un hilo es que Sensor implemente Runnable.
+**Por qué los sensores solo pueden ser Runnable en mi diseño:** porque todos heredan de la clase Sensor, para no repetir el bucle de lecturas, las estadísticas y el informe en cada uno. Java no deja heredar de dos clases a la vez, así que no pueden heredar también de Thread. La única forma de que se puedan ejecutar en un hilo es que Sensor implemente Runnable
 
 **Qué haría yo con el riego:** lo haría también con Runnable. Funciona bien con Thread porque no hereda de nada más, pero así todo el invernadero se lanza igual, y si en el futuro el riego tiene que heredar de otra clase (por ejemplo una clase Dispositivo) no habría que cambiarlo. Para algo tan sencillo Thread vale, pero Runnable me parece más ordenado.
