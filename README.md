@@ -1,6 +1,6 @@
-# Invernadero con hilos
+# UD4_Practica1_Invernadero
 
-UD4_Practica1_Invernadero
+Invernadero con hilos
 
 ## De que trata el programa
 
